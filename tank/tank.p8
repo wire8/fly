@@ -129,6 +129,8 @@ function draw_enemies()
       elseif (enemy.direction==right) then
         spr(96,enemy.x,enemy.y)
       end
+    elseif (enemy.dead_counter) then
+      -- draw dead enemy
     end
   end
 end
@@ -166,10 +168,14 @@ end
 
 function move_enemies()
   for i,enemy in pairs(enemies) do
-    if (enemy.x < player.x) move(enemy, right)
-    if (enemy.x > player.x) move(enemy, left)
-    if (enemy.y < player.y) move(enemy, bottom)
-    if (enemy.y > player.y) move(enemy, top)
+    if (enemy.alive) then
+      if (enemy.x < player.x) move(enemy, right)
+      if (enemy.x > player.x) move(enemy, left)
+      if (enemy.y < player.y) move(enemy, bottom)
+      if (enemy.y > player.y) move(enemy, top)
+    else
+      check_respawn(enemy)
+    end
   end
 end
 
@@ -193,6 +199,10 @@ function check_collisions()
   end
 end
 
+function check_respawn(enemy)
+  if (enemy.dead_counter and t() > enemy.dead_counter + 2) spawn_enemy(enemy)
+end
+
 function is_close(obj1, obj2)
   if (abs(obj1.x - obj2.x) <= 4 and abs(obj1.y - obj2.y) <= 4) then
     return true
@@ -202,6 +212,7 @@ end
 
 function kill_enemy(enemy)
   player.score+=1
+  enemy.dead_counter = t()
   spawn_enemy(enemy)
 end
 
@@ -223,6 +234,7 @@ function spawn_enemy(enemy)
 
   enemy.direction = bottom
   enemy.alive = true
+  enemy.dead_counter = nil
 end
 
 function kill_player()
