@@ -67,25 +67,22 @@ function make_enemy()
 end
 
 function draw_player()
-<<<<<<< HEAD
-  if (player.alive) then
-    spr(player.sprite,player.x,player.y)
+  if (not player.alive) then
+    return
   end
-=======
- if (player.direction==top) then
-  spr(player.sprite,player.x,player.y, 2,2)
-  spr(player.cannon.sprite,player.x,player.y, 2,2)
- elseif (player.direction==bottom) then
-  spr(player.sprite,player.x,player.y, 2,2, false, true)
-  spr(player.cannon.sprite,player.x,player.y, 2,2, false, true)
- elseif (player.direction==left) then
-  spr(player.sprite + 4,player.x,player.y, 2,2, true)
-  spr(player.cannon.sprite + 4,player.x,player.y, 2,2, true)
- elseif (player.direction==right) then
-  spr(player.sprite + 4,player.x,player.y, 2,2, false, true)
-  spr(player.cannon.sprite + 4,player.x,player.y, 2,2, false, true)
- end
->>>>>>> c57cd9a092c39b92246f65f95d5581d9b62cf235
+  if (player.direction==top) then
+    spr(player.sprite,player.x,player.y, 2,2)
+    spr(player.cannon.sprite,player.x,player.y, 2,2)
+  elseif (player.direction==bottom) then
+    spr(player.sprite,player.x,player.y, 2,2, false, true)
+    spr(player.cannon.sprite,player.x,player.y, 2,2, false, true)
+  elseif (player.direction==left) then
+    spr(player.sprite + 4,player.x,player.y, 2,2, true)
+    spr(player.cannon.sprite + 4,player.x,player.y, 2,2, true)
+  elseif (player.direction==right) then
+    spr(player.sprite + 4,player.x,player.y, 2,2, false, true)
+    spr(player.cannon.sprite + 4,player.x,player.y, 2,2, false, true)
+  end
 end
 
 function draw_bullet()
@@ -113,13 +110,8 @@ function move_player()
 end
 
 function move_bullet()
-<<<<<<< HEAD
-  if (bullet.x > 128 or bullet.x < 0 or
-      bullet.y > 128 or bullet.y < 0) then
-=======
   if (bullet.x > (128 + player.x) or bullet.x < 0 or
-      bullet.y > (128 + player.y) or bullet.y <0) then
->>>>>>> c57cd9a092c39b92246f65f95d5581d9b62cf235
+      bullet.y > (128 + player.y) or bullet.y < 0) then
     bullet.alive = false
   end
 
