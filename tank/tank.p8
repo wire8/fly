@@ -1,6 +1,94 @@
 pico-8 cartridge // http://www.pico-8.com
 version 18
 __lua__
+top = 2
+right = 1
+bottom = 3
+left = 0
+
+function _init()
+  make_player()
+  make_bullet()
+end
+
+function _update()
+  move_player()
+  move_bullet()
+  fire()
+end
+
+function _draw()
+  cls()
+  draw_player()
+  draw_bullet()
+end
+
+function make_player()
+  player={}
+  player.x=5
+  player.y=50
+  player.direction=top
+  player.sprite=0
+  player.alive=true
+end
+
+function make_bullet()
+  bullet={}
+  bullet.x=0
+  bullet.y=0
+  bullet.sprite=1
+  bullet.direction=player.direction
+  bullet.alive=false
+end
+
+function draw_player()
+  spr(player.sprite,player.x,player.y)
+end
+
+function draw_bullet()
+  if (bullet.alive) then
+    spr(bullet.sprite,bullet.x,bullet.y)
+  end
+end
+
+function move_player()
+  if (btn(left)) then
+    player.x-=1
+    player.direction = left
+  elseif (btn(right)) then
+    player.x+=1
+    player.direction = right
+  elseif (btn(top)) then
+    player.y-=1
+    player.direction = top
+  elseif (btn(bottom)) then
+    player.y+=1
+    player.direction = bottom
+  end
+end
+
+function move_bullet()
+  if (bullet.x > 128 or bullet.x < 0 or
+      bullet.y > 128 or bullet.y <0) then
+    bullet.alive = false
+  end
+
+  if (bullet.alive) then
+    if (bullet.direction == top) bullet.y -= 1
+    if (bullet.direction == bottom) bullet.y += 1
+    if (bullet.direction == left) bullet.x -= 1
+    if (bullet.direction == right) bullet.x += 1
+  end
+end
+
+function fire()
+  if (btn(4) and not bullet.alive) then
+    bullet.alive=true
+    bullet.x = player.x
+    bullet.y = player.y - 5
+    bullet.direction = player.direction
+  end
+end
 
 __gfx__
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
@@ -122,3 +210,4 @@ a3a490909090909090909090909093949090a3a490878383869090a3a49090a3a490a3a490909090
 90909090a3a49093949090909090939490a3a49093949090a3a490a3a490909090a3a4909394909090a3a493949090909000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 90909090909090a3a49090909090a3a490909090a3a49090909090909090909090909090a3a49090909394a3a49090909000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 0000000000000000000000000000000000000000000000000000000000000000000000000000000000a3a400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+
