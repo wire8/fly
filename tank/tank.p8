@@ -1,6 +1,8 @@
 pico-8 cartridge // http://www.pico-8.com
 version 18
 __lua__
+
+number_of_enemies = 4
 top = 2
 right = 1
 bottom = 3
@@ -58,7 +60,7 @@ end
 
 function make_enemies()
   enemies={}
-  for i=1,3 do
+  for i=1,number_of_enemies do
     enemies[i] = {}
     enemy = enemies[i]
     enemy.sprite=64
@@ -146,8 +148,8 @@ function move_player()
 end
 
 function move_bullet()
-  if (bullet.x > (128 + player.x) or bullet.x < 0 or
-      bullet.y > (128 + player.y) or bullet.y < 0) then
+  if (bullet.x > (128 + player.x) or bullet.x < (player.x - 128) or
+      bullet.y > (128 + player.y) or bullet.y < (player.y - 128)) then
     bullet.alive = false
   end
 
