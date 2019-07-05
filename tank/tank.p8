@@ -19,15 +19,21 @@ end
 
 function _draw()
   cls()
+  camera(player.x-64, player.y-64)
+  draw_level()
   draw_player()
   draw_bullet()
+end
+
+function draw_level()
+ map(0, 0, 48, 28, 100,100)
 end
 
 function make_player()
   player={}
   player.cannon={}
-  player.x=5
-  player.y=50
+  player.x=128
+  player.y=128
   player.direction=top
   player.sprite=0
   player.alive=true
@@ -84,8 +90,8 @@ function move_player()
 end
 
 function move_bullet()
-  if (bullet.x > 128 or bullet.x < 0 or
-      bullet.y > 128 or bullet.y <0) then
+  if (bullet.x > (128 + player.x) or bullet.x < 0 or
+      bullet.y > (128 + player.y) or bullet.y <0) then
     bullet.alive = false
   end
 
