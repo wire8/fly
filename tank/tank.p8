@@ -25,11 +25,14 @@ end
 
 function make_player()
   player={}
+  player.cannon={}
   player.x=5
   player.y=50
   player.direction=top
   player.sprite=0
   player.alive=true
+
+  player.cannon.sprite=32
 end
 
 function make_bullet()
@@ -43,7 +46,19 @@ function make_bullet()
 end
 
 function draw_player()
-  spr(player.sprite,player.x,player.y)
+ if (player.direction==top) then
+  spr(player.sprite,player.x,player.y, 2,2)
+  spr(player.cannon.sprite,player.x,player.y, 2,2)
+ elseif (player.direction==bottom) then
+  spr(player.sprite,player.x,player.y, 2,2, false, true)
+  spr(player.cannon.sprite,player.x,player.y, 2,2, false, true)
+ elseif (player.direction==left) then
+  spr(player.sprite + 4,player.x,player.y, 2,2, true)
+  spr(player.cannon.sprite + 4,player.x,player.y, 2,2, true)
+ elseif (player.direction==right) then
+  spr(player.sprite + 4,player.x,player.y, 2,2, false, true)
+  spr(player.cannon.sprite + 4,player.x,player.y, 2,2, false, true)
+ end
 end
 
 function draw_bullet()
