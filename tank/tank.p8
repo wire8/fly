@@ -42,8 +42,8 @@ function make_player()
   player.sprite=0
   player.speed=1
   player.alive=true
-
   player.cannon.sprite=32
+  player.score=0
 end
 
 function make_bullet()
@@ -74,8 +74,11 @@ function draw_player()
   if (not player.alive) then
     spr(128, player.x, player.y, 1, 1)
     print("game over man!!", player.x - 30, player.y, 0)
+    print("Score:"..player.score,player.x - 64,player.y-50,7)
     enemy.alive = false
     return
+  elseif (player.alive) then
+    print("Score:"..player.score,player.x-64,player.y-50,7)
   end
 
   if (player.direction==top) then
@@ -202,6 +205,7 @@ function kill_enemy(enemy)
   enemy.x = player.x + 128
   enemy.y = player.y + 128
   enemy.direction=bottom
+  player.score+=1
 end
 
 function kill_player()
