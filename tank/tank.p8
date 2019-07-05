@@ -9,13 +9,13 @@ left = 0
 function _init()
   make_player()
   make_bullet()
-  make_enemy()
+  make_enemies()
 end
 
 function _update()
   move_player()
   move_bullet()
-  move_enemy()
+  move_enemies()
   check_collisions()
   fire()
 end
@@ -24,7 +24,7 @@ function _draw()
   cls()
   camera(player.x-64, player.y-64)
   draw_level()
-  draw_enemy()
+  draw_enemies()
   draw_player()
   draw_bullet()
 end
@@ -36,8 +36,8 @@ end
 function make_player()
   player={}
   player.cannon={}
-  player.x=128
-  player.y=128
+  player.x=150
+  player.y=150
   player.direction=top
   player.sprite=0
   player.speed=1
@@ -51,19 +51,23 @@ function make_bullet()
   bullet.x=0
   bullet.y=0
   bullet.sprite=8
-  bullet.speed=10
+  bullet.speed=5
   bullet.direction=player.direction
   bullet.alive=false
 end
 
-function make_enemy()
-  enemy={}
-  enemy.x=0
-  enemy.y=0
-  enemy.direction=bottom
-  enemy.sprite=64
-  enemy.speed=1
-  enemy.alive=true
+function make_enemies()
+  enemies={}
+  for i=1,3 do
+    enemies[i] = {}
+    enemy = enemies[i]
+    enemy.x = 0 + 100*i
+    enemy.y = 0 + 100*i
+    enemy.direction=bottom
+    enemy.sprite=64
+    enemy.speed=1
+    enemy.alive=true
+  end
 end
 
 function draw_player()
@@ -111,9 +115,11 @@ function draw_bullet()
  end
 end
 
-function draw_enemy()
-  if (enemy.alive) then
-    spr(enemy.sprite,enemy.x,enemy.y)
+function draw_enemies()
+  for i, enemy in pairs(enemies) do
+    if (enemy.alive) then
+      spr(enemy.sprite,enemy.x,enemy.y)
+    end
   end
 end
 
@@ -144,11 +150,13 @@ function move_bullet()
   end
 end
 
-function move_enemy()
-  if (enemy.x < player.x) move(enemy, right)
-  if (enemy.x > player.x) move(enemy, left)
-  if (enemy.y < player.y) move(enemy, bottom)
-  if (enemy.y > player.y) move(enemy, top)
+function move_enemies()
+  for i,enemy in pairs(enemies) do
+    if (enemy.x < player.x) move(enemy, right)
+    if (enemy.x > player.x) move(enemy, left)
+    if (enemy.y < player.y) move(enemy, bottom)
+    if (enemy.y > player.y) move(enemy, top)
+  end
 end
 
 function move(obj, direction)
@@ -160,12 +168,14 @@ function move(obj, direction)
 end
 
 function check_collisions() 
-  if (bullet.alive and is_close(bullet, enemy)) then
-    bullet.alive = false
-    kill_enemy()
-  end
-  if (is_close(player, enemy)) then
-    player.alive = false
+  for i,enemy in pairs(enemies) do
+    if (bullet.alive and is_close(bullet, enemy)) then
+      bullet.alive = false
+      kill_enemy(enemy)
+    end
+    if (is_close(player, enemy)) then
+      kill_player()
+    end
   end
 end
 
@@ -176,9 +186,9 @@ function is_close(obj1, obj2)
   return false
 end
 
-function kill_enemy()
-  enemy.x=0
-  enemy.y=0
+function kill_enemy(enemy)
+  enemy.x = player.x + 128
+  enemy.y = player.y + 128
   enemy.direction=bottom
 end
 
@@ -187,10 +197,10 @@ function kill_player()
 end
 
 function fire()
-  if (btn(4) and not bullet.alive) then
+  if (btn(4) and player.alive and not bullet.alive) then
     bullet.alive=true
-    bullet.x = player.x + 1
-    bullet.y = player.y - 1
+    bullet.x = player.x
+    bullet.y = player.y
     bullet.direction = player.direction
   end
 end
