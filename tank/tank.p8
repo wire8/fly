@@ -96,20 +96,20 @@ end
 function draw_bullet()
  if (bullet.alive) then
 
-  if (player.direction==top) then
-   spr(bullet.sprite + 1,bullet.x,bullet.y, 1,1)
+  if (bullet.direction==top) then
+   spr(bullet.sprite + 1,bullet.x + 2,bullet.y, 1,1)
   end
 
-  if (player.direction==bottom) then
-   spr(bullet.sprite + 1,bullet.x,bullet.y, 1,1,false, true)
+  if (bullet.direction==bottom) then
+   spr(bullet.sprite + 1,bullet.x + 2,bullet.y, 1,1,false, true)
   end
 
-  if (player.direction==left) then
-   spr(bullet.sprite,bullet.x,bullet.y + 8, 1,1, true)
+  if (bullet.direction==left) then
+   spr(bullet.sprite,bullet.x,bullet.y + 4, 1,1, true)
   end
   
-  if (player.direction==right) then
-   spr(bullet.sprite,bullet.x,bullet.y + 8, 1,1)
+  if (bullet.direction==right) then
+   spr(bullet.sprite,bullet.x,bullet.y + 4, 1,1)
   end
 
  end
@@ -192,7 +192,7 @@ function check_collisions()
 end
 
 function is_close(obj1, obj2)
-  if (abs(obj1.x - obj2.x) <= 3 and abs(obj1.y - obj2.y) <= 3) then
+  if (abs(obj1.x - obj2.x) <= 4 and abs(obj1.y - obj2.y) <= 4) then
     return true
   end
   return false
