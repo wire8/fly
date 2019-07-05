@@ -24,9 +24,9 @@ function _draw()
   cls()
   camera(player.x-64, player.y-64)
   draw_level()
+  draw_enemy()
   draw_player()
   draw_bullet()
-  draw_enemy()
 end
 
 function draw_level()
@@ -68,6 +68,7 @@ end
 
 function draw_player()
   if (not player.alive) then
+    print("game over man!!", player.x - 30, player.y, 0)
     return
   end
   if (player.direction==top) then
@@ -98,14 +99,15 @@ function draw_enemy()
 end
 
 function move_player()
+  if (not player.alive) return
   if (btn(left)) then
-    move_left(player)
+    move(player, left)
   elseif (btn(right)) then
-    move_right(player)
-  elseif (btn(top)) then
-    move_up(player)
+    move(player, right)
+  elseif(btn(top)) then
+    move(player, top)
   elseif (btn(bottom)) then
-    move_down(player)
+    move(player, bottom)
   end
 end
 
@@ -116,43 +118,26 @@ function move_bullet()
   end
 
   if (bullet.alive) then
-    if (bullet.direction == top) move_up(bullet)
-    if (bullet.direction == bottom) move_down(bullet)
-    if (bullet.direction == left) move_left(bullet)
-    if (bullet.direction == right) move_right(bullet)
+    if (bullet.direction == top) move(bullet, top)
+    if (bullet.direction == bottom) move(bullet, bottom)
+    if (bullet.direction == left) move(bullet, left)
+    if (bullet.direction == right) move(bullet, right)
   end
 end
 
 function move_enemy()
-  if (enemy.x < player.x) then
-    move_right(enemy)
-  elseif (enemy.x > player.x) then
-    move_left(enemy)
-  elseif (enemy.y < player.y) then
-    move_down(enemy)
-  elseif (enemy.y > player.y) then
-    move_up(enemy)
-  end
+  if (enemy.x < player.x) move(enemy, right)
+  if (enemy.x > player.x) move(enemy, left)
+  if (enemy.y < player.y) move(enemy, bottom)
+  if (enemy.y > player.y) move(enemy, top)
 end
 
-function move_up(obj)
-  obj.y-=obj.speed
-  obj.direction = top
-end
-
-function move_down(obj)
-  obj.y+=obj.speed
-  obj.direction = bottom
-end
-
-function move_left(obj)
-  obj.x-=obj.speed
-  obj.direction = left
-end
-
-function move_right(obj)
-  obj.x+=obj.speed
-  obj.direction = right
+function move(obj, direction)
+  if (direction == top) obj.y-=obj.speed
+  if (direction == bottom) obj.y+=obj.speed  
+  if (direction == left) obj.x-=obj.speed
+  if (direction == right) obj.x+=obj.speed
+  obj.direction = direction
 end
 
 function check_collisions() 
@@ -176,6 +161,10 @@ function kill_enemy()
   enemy.x=0
   enemy.y=0
   enemy.direction=bottom
+end
+
+function kill_player()
+  player.alive = false
 end
 
 function fire()
