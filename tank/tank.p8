@@ -61,12 +61,9 @@ function make_enemies()
   for i=1,3 do
     enemies[i] = {}
     enemy = enemies[i]
-    enemy.x = 0 + 100*i
-    enemy.y = 0 + 100*i
-    enemy.direction=bottom
     enemy.sprite=64
     enemy.speed=1
-    enemy.alive=true
+    spawn_enemy(enemy)
   end
 end
 
@@ -199,9 +196,27 @@ function is_close(obj1, obj2)
 end
 
 function kill_enemy(enemy)
-  enemy.x = player.x + 128
-  enemy.y = player.y + 128
-  enemy.direction=bottom
+  spawn_enemy(enemy)
+end
+
+function spawn_enemy(enemy)
+  random = rnd(100)
+  if (random < 25) then
+    enemy.x = player.x - 128
+    enemy.y = player.y - 128
+  elseif (random < 50) then
+    enemy.x = player.x + 128
+    enemy.y = player.y - 128
+  elseif (random < 75) then
+    enemy.x = player.x - 128
+    enemy.y = player.y + 128
+  else
+    enemy.x = player.x + 128
+    enemy.y = player.y + 128
+  end
+
+  enemy.direction = bottom
+  enemy.alive = true
 end
 
 function kill_player()
