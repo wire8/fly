@@ -9,11 +9,14 @@ left = 0
 function _init()
   make_player()
   make_bullet()
+  make_enemy()
 end
 
 function _update()
   move_player()
   move_bullet()
+  move_enemy()
+  check_collisions()
   fire()
 end
 
@@ -21,6 +24,7 @@ function _draw()
   cls()
   draw_player()
   draw_bullet()
+  draw_enemy()
 end
 
 function make_player()
@@ -29,6 +33,7 @@ function make_player()
   player.y=50
   player.direction=top
   player.sprite=0
+  player.speed=1
   player.alive=true
 end
 
@@ -37,13 +42,25 @@ function make_bullet()
   bullet.x=0
   bullet.y=0
   bullet.sprite=1
-  bullet.speed=10
+  bullet.speed=5
   bullet.direction=player.direction
   bullet.alive=false
 end
 
+function make_enemy()
+  enemy={}
+  enemy.x=0
+  enemy.y=0
+  enemy.direction=bottom
+  enemy.sprite=64
+  enemy.speed=1
+  enemy.alive=true
+end
+
 function draw_player()
-  spr(player.sprite,player.x,player.y)
+  if (player.alive) then
+    spr(player.sprite,player.x,player.y)
+  end
 end
 
 function draw_bullet()
@@ -52,34 +69,91 @@ function draw_bullet()
   end
 end
 
+function draw_enemy()
+  if (enemy.alive) then
+    spr(enemy.sprite,enemy.x,enemy.y)
+  end
+end
+
 function move_player()
   if (btn(left)) then
-    player.x-=1
-    player.direction = left
+    move_left(player)
   elseif (btn(right)) then
-    player.x+=1
-    player.direction = right
+    move_right(player)
   elseif (btn(top)) then
-    player.y-=1
-    player.direction = top
+    move_up(player)
   elseif (btn(bottom)) then
-    player.y+=1
-    player.direction = bottom
+    move_down(player)
   end
 end
 
 function move_bullet()
   if (bullet.x > 128 or bullet.x < 0 or
-      bullet.y > 128 or bullet.y <0) then
+      bullet.y > 128 or bullet.y < 0) then
     bullet.alive = false
   end
 
   if (bullet.alive) then
-    if (bullet.direction == top) bullet.y -= bullet.speed
-    if (bullet.direction == bottom) bullet.y += bullet.speed
-    if (bullet.direction == left) bullet.x -= bullet.speed
-    if (bullet.direction == right) bullet.x += bullet.speed
+    if (bullet.direction == top) move_up(bullet)
+    if (bullet.direction == bottom) move_down(bullet)
+    if (bullet.direction == left) move_left(bullet)
+    if (bullet.direction == right) move_right(bullet)
   end
+end
+
+function move_enemy()
+  if (enemy.x < player.x) then
+    move_right(enemy)
+  elseif (enemy.x > player.x) then
+    move_left(enemy)
+  elseif (enemy.y < player.y) then
+    move_down(enemy)
+  elseif (enemy.y > player.y) then
+    move_up(enemy)
+  end
+end
+
+function move_up(obj)
+  obj.y-=obj.speed
+  obj.direction = top
+end
+
+function move_down(obj)
+  obj.y+=obj.speed
+  obj.direction = bottom
+end
+
+function move_left(obj)
+  obj.x-=obj.speed
+  obj.direction = left
+end
+
+function move_right(obj)
+  obj.x+=obj.speed
+  obj.direction = right
+end
+
+function check_collisions() 
+  if (bullet.alive and is_close(bullet, enemy)) then
+    bullet.alive = false
+    kill_enemy()
+  end
+  if (is_close(player, enemy)) then
+    player.alive = false
+  end
+end
+
+function is_close(obj1, obj2)
+  if (abs(obj1.x - obj2.x) <= 3 and abs(obj1.y - obj2.y) <= 3) then
+    return true
+  end
+  return false
+end
+
+function kill_enemy()
+  enemy.x=0
+  enemy.y=0
+  enemy.direction=bottom
 end
 
 function fire()
