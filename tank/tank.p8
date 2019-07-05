@@ -130,7 +130,7 @@ function draw_enemies()
         spr(96,enemy.x,enemy.y)
       end
     elseif (enemy.dead_counter) then
-      -- draw dead enemy
+      spr(141,enemy.x,enemy.y)
     end
   end
 end
@@ -189,11 +189,11 @@ end
 
 function check_collisions() 
   for i,enemy in pairs(enemies) do
-    if (bullet.alive and is_close(bullet, enemy)) then
+    if (bullet.alive and enemy.alive and is_close(bullet, enemy)) then
       bullet.alive = false
       kill_enemy(enemy)
     end
-    if (is_close(player, enemy)) then
+    if (enemy.alive and is_close(player, enemy)) then
       kill_player()
     end
   end
@@ -212,8 +212,8 @@ end
 
 function kill_enemy(enemy)
   player.score+=1
+  enemy.alive = false
   enemy.dead_counter = t()
-  spawn_enemy(enemy)
 end
 
 function spawn_enemy(enemy)
