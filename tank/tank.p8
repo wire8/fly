@@ -9,27 +9,41 @@ left = 0
 function _init()
   make_player()
   make_bullet()
+  make_enemy()
 end
 
 function _update()
   move_player()
   move_bullet()
+  move_enemy()
+  check_collisions()
   fire()
 end
 
 function _draw()
   cls()
+  camera(player.x-64, player.y-64)
+  draw_level()
   draw_player()
   draw_bullet()
+  draw_enemy()
+end
+
+function draw_level()
+ map(0, 0, 48, 28, 100,100)
 end
 
 function make_player()
   player={}
-  player.x=5
-  player.y=50
+  player.cannon={}
+  player.x=128
+  player.y=128
   player.direction=top
   player.sprite=0
+  player.speed=1
   player.alive=true
+
+  player.cannon.sprite=32
 end
 
 function make_bullet()
@@ -37,13 +51,38 @@ function make_bullet()
   bullet.x=0
   bullet.y=0
   bullet.sprite=1
-  bullet.speed=10
+  bullet.speed=5
   bullet.direction=player.direction
   bullet.alive=false
 end
 
+function make_enemy()
+  enemy={}
+  enemy.x=0
+  enemy.y=0
+  enemy.direction=bottom
+  enemy.sprite=64
+  enemy.speed=1
+  enemy.alive=true
+end
+
 function draw_player()
-  spr(player.sprite,player.x,player.y)
+  if (not player.alive) then
+    return
+  end
+  if (player.direction==top) then
+    spr(player.sprite,player.x,player.y, 2,2)
+    spr(player.cannon.sprite,player.x,player.y, 2,2)
+  elseif (player.direction==bottom) then
+    spr(player.sprite,player.x,player.y, 2,2, false, true)
+    spr(player.cannon.sprite,player.x,player.y, 2,2, false, true)
+  elseif (player.direction==left) then
+    spr(player.sprite + 4,player.x,player.y, 2,2, true)
+    spr(player.cannon.sprite + 4,player.x,player.y, 2,2, true)
+  elseif (player.direction==right) then
+    spr(player.sprite + 4,player.x,player.y, 2,2, false, true)
+    spr(player.cannon.sprite + 4,player.x,player.y, 2,2, false, true)
+  end
 end
 
 function draw_bullet()
@@ -52,34 +91,91 @@ function draw_bullet()
   end
 end
 
+function draw_enemy()
+  if (enemy.alive) then
+    spr(enemy.sprite,enemy.x,enemy.y)
+  end
+end
+
 function move_player()
   if (btn(left)) then
-    player.x-=1
-    player.direction = left
+    move_left(player)
   elseif (btn(right)) then
-    player.x+=1
-    player.direction = right
+    move_right(player)
   elseif (btn(top)) then
-    player.y-=1
-    player.direction = top
+    move_up(player)
   elseif (btn(bottom)) then
-    player.y+=1
-    player.direction = bottom
+    move_down(player)
   end
 end
 
 function move_bullet()
-  if (bullet.x > 128 or bullet.x < 0 or
-      bullet.y > 128 or bullet.y <0) then
+  if (bullet.x > (128 + player.x) or bullet.x < 0 or
+      bullet.y > (128 + player.y) or bullet.y < 0) then
     bullet.alive = false
   end
 
   if (bullet.alive) then
-    if (bullet.direction == top) bullet.y -= bullet.speed
-    if (bullet.direction == bottom) bullet.y += bullet.speed
-    if (bullet.direction == left) bullet.x -= bullet.speed
-    if (bullet.direction == right) bullet.x += bullet.speed
+    if (bullet.direction == top) move_up(bullet)
+    if (bullet.direction == bottom) move_down(bullet)
+    if (bullet.direction == left) move_left(bullet)
+    if (bullet.direction == right) move_right(bullet)
   end
+end
+
+function move_enemy()
+  if (enemy.x < player.x) then
+    move_right(enemy)
+  elseif (enemy.x > player.x) then
+    move_left(enemy)
+  elseif (enemy.y < player.y) then
+    move_down(enemy)
+  elseif (enemy.y > player.y) then
+    move_up(enemy)
+  end
+end
+
+function move_up(obj)
+  obj.y-=obj.speed
+  obj.direction = top
+end
+
+function move_down(obj)
+  obj.y+=obj.speed
+  obj.direction = bottom
+end
+
+function move_left(obj)
+  obj.x-=obj.speed
+  obj.direction = left
+end
+
+function move_right(obj)
+  obj.x+=obj.speed
+  obj.direction = right
+end
+
+function check_collisions() 
+  if (bullet.alive and is_close(bullet, enemy)) then
+    bullet.alive = false
+    kill_enemy()
+  end
+  if (is_close(player, enemy)) then
+    player.alive = false
+  end
+end
+
+function is_close(obj1, obj2)
+  if (abs(obj1.x - obj2.x) <= 3 and abs(obj1.y - obj2.y) <= 3) then
+    return true
+  end
+  return false
+end
+
+function kill_enemy()
+  enemy.x=0
+  enemy.y=0
+  enemy.direction=bottom
 end
 
 function fire()
@@ -211,3 +307,7 @@ a3a490909090909090909090909093949090a3a490878383869090a3a49090a3a490a3a490909090
 90909090a3a49093949090909090939490a3a49093949090a3a490a3a490909090a3a4909394909090a3a493949090909000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 90909090909090a3a49090909090a3a490909090a3a49090909090909090909090909090a3a49090909394a3a49090909000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 0000000000000000000000000000000000000000000000000000000000000000000000000000000000a3a400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+__sfx__
+000800200c6300c6300c6300c6300c6300c6300c6300c6300c6300c6300c6300c6300c6300c6300c6300c6300c6300c6300c6300c6300c6300c6300c6300c6300c6300c6300c6300c6300c6300c6300c6300c630
+000400003e4503e450226501b65012650106500d6500a65008650066500565002650016500065000650006501660015600156000f600166000c6001660018600186000f6001a600166000f600186001860024600
+000d000012450114501345010450114501345010450114501345013450104501145013450104501145013450134500f4501145013450104501145013450104501145013450104501145013450104501145013450
